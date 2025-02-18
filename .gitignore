@@ -1,0 +1,14 @@
+venv/
+.idea/
+pycache
+env/
+*.log
+*.exe
+*.pdf
+*.csv
+*.log
+*.png
+*.env
+config.pyc
+config.py
+Data/
