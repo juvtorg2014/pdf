@@ -2,15 +2,19 @@
 Удаление водяных знаков из файлов PDF
 """
 import os
+import sys
+
 import pypdf
 from datetime import datetime
+from time import sleep
 from Crypto.Cipher import AES
+from Tools.scripts.pindent import delete_file
 
 # Длина названия водяного знака. Регулиуется подбором
 LONG_IMAGE = 12
 
 
-def del_watermark(name_file):
+def del_watermark(name_file, del_files):
     """Удаление водяного знака одного файла"""
     new_name = name_file[:-4] + '_new.pdf'
     pdf = pypdf.PdfReader(name_file)
@@ -47,8 +51,22 @@ def watch_files(name_cur) -> list:
                 lst_files.append(os.path.join(root, pdf_file))
     return lst_files
 
+def delete_files(list_files):
+    """Процедура удаления копий с водяными знаками"""
+    for file in list_files:
+        new_file = file[:-4] + '_new.pdf'
+        if os.path.isfile(new_file):
+            if os.path.getsize(new_file) > 10:
+                os.remove(file)
+                print(f"Файл {file} удален")
+
+
 
 if __name__ == '__main__':
+    if len (sys.argv) > 1:
+        del_files = 1
+    else:
+        del_files = 0
     type_input = input('Введите путь к папкам или оставьте текущую - Enter\n')
     if len(type_input) == 0:
         print(os.getcwd())
@@ -61,5 +79,8 @@ if __name__ == '__main__':
     start_time = datetime.now()
     for file in list_files:
         print(file)
-        del_watermark(file)
+        del_watermark(file, del_files)
+    if del_files == 1:
+        delete_files(list_files)
     print(f"Все сделано за {(datetime.now() - start_time).__str__().split('.')[0]} секунд")
+    sleep(30)
